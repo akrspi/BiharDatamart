@@ -1,7 +1,7 @@
 ,tenantid,Demand Count,Total Demand Amount,Demand Collected,Total No. of Payments,Total Payment Amount Collected,Total No. of consumers
 0,Muzaffarpurbandrabandrawab,104,3120.0,30.0,1.0,30.0,104
 1,Muzaffarpurbandrabandrawac,380,11400.0,1500.0,25.0,1500.0,190
-2,Muzaffarpurbandrabandrawag,183,5490.0,720.0,13.0,720.0,61
+2,Muzaffarpurbandrabandrawag,183,5490.0,930.0,20.0,930.0,61
 3,Muzaffarpurbandrabandrawbc,186,5580.0,1020.0,19.0,1020.0,93
 4,Muzaffarpurbandrabargaowae,334,10020.0,0.0,0.0,0.0,167
 5,Muzaffarpurbandrabargaowaf,194,5820.0,0.0,0.0,0.0,97
@@ -76,7 +76,7 @@
 74,Muzaffarpurmoraulharsingpurlautanwab,3,90.0,90.0,4.0,240.0,48
 75,Muzaffarpurmoraulharsingpurlautanwac,84,2520.0,30.0,1.0,30.0,84
 76,Muzaffarpurmoraulharsingpurlautanwad,296,8640.0,3390.0,104.0,3630.0,148
-77,Muzaffarpurmoraulharsingpurlautanwae,83,2490.0,90.0,3.0,90.0,83
+77,Muzaffarpurmoraulharsingpurlautanwae,166,4980.0,120.0,4.0,120.0,83
 78,Muzaffarpurmoraulharsingpurlautanwag,122,3660.0,330.0,11.0,330.0,122
 79,Muzaffarpurmoraulharsingpurlautanwbb,206,6180.0,770.0,26.0,770.0,103
 80,Muzaffarpurmoraulharsingpurlautanwbd,33,990.0,960.0,32.0,960.0,33
@@ -98,7 +98,7 @@
 96,Muzaffarpurmoraulpilkhigajpattiwbe,81,2220.0,150.0,5.0,360.0,81
 97,Muzaffarpurmoraulsadiqpurmuraulwac,54,1620.0,120.0,4.0,120.0,54
 98,Muzaffarpurmoraulsadiqpurmuraulwad,110,3300.0,90.0,3.0,90.0,55
-99,Muzaffarpurmoraulsadiqpurmuraulwai,174,5220.0,390.0,7.0,390.0,87
+99,Muzaffarpurmoraulsadiqpurmuraulwai,174,5220.0,450.0,8.0,450.0,87
 100,Muzaffarpurmoraulvidhyajhanpwab,222,6660.0,3600.0,61.0,3600.0,111
 101,Muzaffarpurmoraulvidhyajhanpwac,416,12480.0,2780.0,69.0,2780.0,104
 102,Muzaffarpurmoraulvidhyajhanpwad,472,14160.0,8370.0,252.0,8370.0,118
