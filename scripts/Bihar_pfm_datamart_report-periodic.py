@@ -60,7 +60,7 @@ def connect():
         print(exception)
 
     #Last Week
-    impactQuery="SELECT 'Last Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and (demand.createdtime/1000)>=cast(((extract(epoch from now()))-604800) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
+    impactQuery="SELECT 'Last Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected, COUNT(DISTINCT demand.tenantId) as distinct_demand_tenants from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and (demand.createdtime/1000)>=cast(((extract(epoch from now()))-604800) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
     
     # to_char((to_timestamp(taxperiodfrom/1000)::timestamp  at time Zone 'Asia/Kolkata'), 'mm/dd/yyyy HH24:MI:SS') as taxperiodfrom, to_char((to_timestamp(taxperiodto/1000)::timestamp  at time Zone 'Asia/Kolkata'), 'mm/dd/yyyy HH24:MI:SS') as taxperiodto
 
@@ -74,7 +74,7 @@ def connect():
     
     
     #Total number of payments   
-    noOfPayments="select 'Last Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800) as bigint)"
+    noOfPayments="select 'Last Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount, COUNT(DISTINCT pd.tenantId) as distinct_payment_tenants from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800) as bigint)"
     noOfPaymentsQuery=pd.read_sql_query(noOfPayments,conn)
     noOfPaymentsData=pd.DataFrame(noOfPaymentsQuery)
     
@@ -84,10 +84,10 @@ def connect():
     noOfConsumersData=pd.DataFrame(noOfConsumersQuery)
 
     
-    data.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected']
+    data.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected', 'Total Tenant(Demand Generated)']
     
-    noOfPaymentsData.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected']
-    noOfConsumersData.columns=['Period', 'Total No. of consumers', 'Total Tenants used']
+    noOfPaymentsData.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected', 'Total Tenant(Payment Collected)']
+    noOfConsumersData.columns=['Period', 'Total No. of consumers', 'Total Tenants (created new consumers)']
     
     
     impactdata = pd.DataFrame()
@@ -99,14 +99,14 @@ def connect():
     
     #####################################
     #Last Second Week
-    impactQueryWeek2="SELECT 'Last Second Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*2) as bigint) and ((demand.createdtime)/1000)<cast(((extract(epoch from now()))-604800*1) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
+    impactQueryWeek2="SELECT 'Last Second Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected, COUNT(DISTINCT demand.tenantId) as distinct_demand_tenants from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*2) as bigint) and ((demand.createdtime)/1000)<cast(((extract(epoch from now()))-604800*1) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
         
     queryWeek2 = pd.read_sql_query(impactQueryWeek2, conn)
     dataWeek2 = pd.DataFrame(queryWeek2)
     
     
     #Total number of payments   
-    noOfPaymentsWeek2="select 'Last Second Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*2) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*1) as bigint)"
+    noOfPaymentsWeek2="select 'Last Second Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount, COUNT(DISTINCT pd.tenantId) as distinct_payment_tenants from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*2) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*1) as bigint)"
     noOfPaymentsQueryWeek2=pd.read_sql_query(noOfPaymentsWeek2,conn)
     noOfPaymentsDataWeek2=pd.DataFrame(noOfPaymentsQueryWeek2)
     
@@ -116,11 +116,11 @@ def connect():
     noOfConsumersDataWeek2=pd.DataFrame(noOfConsumersQueryWeek2)
 
     
-    dataWeek2.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected']
+    dataWeek2.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected', 'Total Tenant(Demand Generated)']
     
     
-    noOfPaymentsDataWeek2.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected']
-    noOfConsumersDataWeek2.columns=['Period', 'Total No. of consumers', 'Total Tenants used']
+    noOfPaymentsDataWeek2.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected', 'Total Tenant(Payment Collected)']
+    noOfConsumersDataWeek2.columns=['Period', 'Total No. of consumers', 'Total Tenants (created new consumers)']
     
     
     impactdataWeek2 = pd.DataFrame()
@@ -135,7 +135,7 @@ def connect():
     
     #####################################
     #Last Third Week
-    impactQueryWeek3="SELECT 'Last Third Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*3) as bigint) and (demand.createdtime/1000)<cast(((extract(epoch from now()))-604800*2) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
+    impactQueryWeek3="SELECT 'Last Third Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected, COUNT(DISTINCT demand.tenantId) as distinct_demand_tenants from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*3) as bigint) and (demand.createdtime/1000)<cast(((extract(epoch from now()))-604800*2) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
     
     
     queryWeek3 = pd.read_sql_query(impactQueryWeek3, conn)
@@ -143,7 +143,7 @@ def connect():
     
     
     #Total number of payments   
-    noOfPaymentsWeek3="select 'Last Third Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*3) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*2) as bigint)"
+    noOfPaymentsWeek3="select 'Last Third Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount, COUNT(DISTINCT pd.tenantId) as distinct_payment_tenants from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*3) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*2) as bigint)"
     noOfPaymentsQueryWeek3=pd.read_sql_query(noOfPaymentsWeek3,conn)
     noOfPaymentsDataWeek3=pd.DataFrame(noOfPaymentsQueryWeek3)
     
@@ -153,10 +153,10 @@ def connect():
     noOfConsumersDataWeek3=pd.DataFrame(noOfConsumersQueryWeek3)
 
     
-    dataWeek3.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected']
+    dataWeek3.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected', 'Total Tenant(Demand Generated)']
     
-    noOfPaymentsDataWeek3.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected']
-    noOfConsumersDataWeek3.columns=['Period', 'Total No. of consumers', 'Total Tenants used']
+    noOfPaymentsDataWeek3.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected', 'Total Tenant(Payment Collected)']
+    noOfConsumersDataWeek3.columns=['Period', 'Total No. of consumers', 'Total Tenants (created new consumers)']
     
     
     impactdataWeek3 = pd.DataFrame()
@@ -172,14 +172,14 @@ def connect():
     
     #####################################
     #Last Fourth Week
-    impactQueryWeek4="SELECT 'Last Fourth Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*4) as bigint) and (demand.createdtime/1000)<cast(((extract(epoch from now()))-604800*3) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
+    impactQueryWeek4="SELECT 'Last Fourth Week' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected, COUNT(DISTINCT demand.tenantId) as distinct_demand_tenants from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and ((demand.createdtime)/1000)>=cast(((extract(epoch from now()))-604800*4) as bigint) and (demand.createdtime/1000)<cast(((extract(epoch from now()))-604800*3) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
     
     queryWeek4 = pd.read_sql_query(impactQueryWeek4, conn)
     dataWeek4 = pd.DataFrame(queryWeek4)
     
     
     #Total number of payments   
-    noOfPaymentsWeek4="select 'Last Fourth Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*4) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*3) as bigint)"
+    noOfPaymentsWeek4="select 'Last Fourth Week' as Period,count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount, COUNT(DISTINCT pd.tenantId) as distinct_payment_tenants from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-604800*4) as bigint) and (pd.createdtime/1000)<cast(((extract(epoch from now()))-604800*3) as bigint)"
     noOfPaymentsQueryWeek4=pd.read_sql_query(noOfPaymentsWeek4,conn)
     noOfPaymentsDataWeek4=pd.DataFrame(noOfPaymentsQueryWeek4)
     
@@ -189,12 +189,12 @@ def connect():
     noOfConsumersDataWeek4=pd.DataFrame(noOfConsumersQueryWeek4)
 
     
-    dataWeek4.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected']
+    dataWeek4.columns=['Period', 'Demand Count','Total Demand Amount', 'Demand Collected', 'Total Tenant(Demand Generated)']
     
     #, 'From Date', 'To Date'
     
-    noOfPaymentsDataWeek4.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected']
-    noOfConsumersDataWeek4.columns=['Period', 'Total No. of consumers', 'Total Tenants used']
+    noOfPaymentsDataWeek4.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected', 'Total Tenant(Payment Collected)']
+    noOfConsumersDataWeek4.columns=['Period', 'Total No. of consumers', 'Total Tenants (created new consumers)']
     
     
     impactdataWeek4 = pd.DataFrame()
@@ -216,29 +216,29 @@ def connect():
     
     
     #####################################
-    #Monthly data
-    impactMonthlyQuery="SELECT 'Total Till Date' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid and (demand.createdtime/1000)>=cast(((extract(epoch from now()))-604800*4) as bigint) where demand.status='ACTIVE' and demand.businessservice='WS';"
+    #Total data
+    impactMonthlyQuery="SELECT 'Total Till Date' as Period, count(*) as demand_count, sum(taxamount) as demand_totalamount, sum(collectionamount) as Demand_Collected, COUNT(DISTINCT demand.tenantId) as distinct_demand_tenants from egbs_demand_v1 demand inner join eg_ws_connection ws on demand.consumercode=ws.connectionno inner join egbs_demanddetail_v1 demanddetail on demand.id=demanddetail.demandid where demand.status='ACTIVE' and demand.businessservice='WS';"
     
     query = pd.read_sql_query(impactMonthlyQuery, conn)
     dataMonth = pd.DataFrame(query)
     
     
     #Total number of payments   
-    noOfPaymentsMonthly="select 'Total Till Date' as Period, count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' and (pd.createdtime/1000)>=cast(((extract(epoch from now()))-(604800*4)) as bigint)"
+    noOfPaymentsMonthly="select 'Total Till Date' as Period, count(*) as total_payments,COALESCE(sum(pd.amountpaid),0) as total_paid_amount, COUNT(DISTINCT pd.tenantId) as distinct_payment_tenants from egcl_payment p join egcl_paymentdetail pd on p.id = pd.paymentid where pd.businessservice = 'WS' "
     noOfPaymentsQueryMonth=pd.read_sql_query(noOfPaymentsMonthly,conn)
     noOfPaymentsDataMonth=pd.DataFrame(noOfPaymentsQueryMonth)
     #print(noOfPaymentsDataMonth)
     
     #Adding the number of consumers   
-    noOfConsumersMonth="select 'Total Till Date' as Period, count(*), count(distinct tenantid) as tenantids from eg_ws_connection where (createdtime/1000)>=cast(((extract(epoch from now()))-(604800*4)) as bigint)"
+    noOfConsumersMonth="select 'Total Till Date' as Period, count(*), count(distinct tenantid) as tenantids from eg_ws_connection "
     noOfConsumersQueryMonth=pd.read_sql_query(noOfConsumersMonth,conn)
     noOfConsumersDataMonth=pd.DataFrame(noOfConsumersQueryMonth)
     #print(noOfConsumersDataMonth)
     
-    dataMonth.columns=['Period', 'Demand Count', 'Total Demand Amount', 'Demand Collected']
+    dataMonth.columns=['Period', 'Demand Count', 'Total Demand Amount', 'Demand Collected', 'Total Tenant(Demand Generated)']
     
-    noOfPaymentsDataMonth.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected']
-    noOfConsumersDataMonth.columns=['Period', 'Total No. of consumers', 'Total Tenants used']
+    noOfPaymentsDataMonth.columns=['Period', 'Total No. of Payments', 'Total Payment Amount Collected', 'Total Tenant(Payment Collected)']
+    noOfConsumersDataMonth.columns=['Period', 'Total No. of consumers', 'Total Tenants (created new consumers)']
     
     
     impactdataMonth = pd.DataFrame()
@@ -255,16 +255,22 @@ def connect():
     impactdata=impactdata.fillna('N/A')
     impactdata['Total No. of Payments']=impactdata['Total No. of Payments'].replace('N/A', '0')
     impactdata['Total Payment Amount Collected']=impactdata['Total Payment Amount Collected'].replace('N/A', '0')
+    impactdata['Total Tenant(Demand Generated)']=impactdata['Total Tenant(Demand Generated)'].apply(pd.to_numeric)
     impactdata['Total No. of consumers']=impactdata['Total No. of consumers'].replace('N/A', '0')
-    impactdata['Total Tenants used']=impactdata['Total Tenants used'].replace('N/A', '0')   
+    #impactdata['Total Tenants used']=impactdata['Total Tenants used'].replace('N/A', '0') 
+    impactdata['Total Tenants (created new consumers)']=impactdata['Total Tenants (created new consumers)'].replace('N/A', '0')  
+    impactdata['Total Tenant(Demand Generated)']=impactdata['Total Tenant(Demand Generated)'].replace('N/A', '0')
+    impactdata['Total Tenant(Payment Collected)']=impactdata['Total Tenant(Payment Collected)'].replace('N/A', '0')   
     impactdata['Total Payment Amount Collected']=impactdata['Total Payment Amount Collected'].apply(pd.to_numeric, errors='ignore')
+    impactdata['Total Tenant(Payment Collected)']=impactdata['Total Tenant(Payment Collected)'].apply(pd.to_numeric)
    
     impactdata['Total Demand Amount']=impactdata['Total Demand Amount'].apply(pd.to_numeric, errors='ignore')
     
     impactdata['Demand Count']=impactdata['Demand Count'].apply(pd.to_numeric)
     impactdata['Total No. of Payments']=impactdata['Total No. of Payments'].apply(pd.to_numeric)
     impactdata['Total No. of consumers']=impactdata['Total No. of consumers'].apply(pd.to_numeric)
-    impactdata['Total Tenants used']=impactdata['Total Tenants used'].apply(pd.to_numeric)
+    #impactdata['Total Tenants used']=impactdata['Total Tenants used'].apply(pd.to_numeric)
+    impactdata['Total Tenants (created new consumers)']=impactdata['Total Tenants (created new consumers)'].apply(pd.to_numeric)
     #impactdata['tenantid']=impactdata['tenantid'].str.replace("pb.", "",1).str.title()
     #impactdata=impactdata.set_index('Period').transpose()
     impactdata=impactdata.transpose()
