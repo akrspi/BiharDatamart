@@ -1,10 +1,10 @@
 Period,Last Fourth Week,Last Third Week,Last Second Week,Last Week,Total Till Date
-Demand Count,12464,11034,4884,1558,29940
-Total Demand Amount,368770.0,328010.0,146460.0,45810.0,889050.0
-Demand Collected,28842.0,24900.0,18110.0,10810.0,82662.0
-Total Tenant(Demand Generated),101,68,31,12,205
-Total No. of Payments,714,939,405,555,2613
-Total Payment Amount Collected,39496.0,59269.0,32970.0,25567.0,157302.0
-Total Tenant(Payment Collected),42,42,27,23,92
-Total No. of consumers,2607,1362,404,77,4450
-Total Tenants (created new consumers),43,16,5,1,61
+Demand Count,12567,10931,4971,1471,104163
+Total Demand Amount,371860.0,324920.0,148530.0,43740.0,3184561.0
+Demand Collected,28932.0,24810.0,18950.0,9970.0,555605.0
+Total Tenant(Demand Generated),102,67,32,11,349
+Total No. of Payments,695,939,429,531,9894
+Total Payment Amount Collected,38536.0,59269.0,34140.0,24397.0,587274.0
+Total Tenant(Payment Collected),40,42,28,22,202
+Total No. of consumers,2646,1323,404,77,58337
+Total Tenants (created new consumers),43,15,5,1,532
